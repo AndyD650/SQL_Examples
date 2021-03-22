@@ -1,0 +1,12 @@
+--  This is a query to generate a report of the month over month growth (or lack there of) of posts.  This was initially for a website, but could be easily reworked.
+
+SELECT date_trunc('month', p.created_at)::DATE AS date,
+       COUNT(*) AS count, 
+       ROUND(
+       ((COUNT(*) - LAG(COUNT(*), 1) OVER (ORDER BY date_trunc('month', p.created_at)::DATE, 1))
+       / LAG(COUNT(*),1) OVER (ORDER BY date_trunc('month', p.created_at)::DATE, 1)::FLOAT4 * 100)::NUMERIC,1)  || '%' AS percent_growth
+FROM posts p
+GROUP BY 1
+ORDER BY 1;
+
+    
